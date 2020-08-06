@@ -89,7 +89,7 @@ async def rps(ctx, shape):
                 await ctx.send(f"{ctx.message.author.mention}: scissors, computer: rock\nComputer wins")
 
 @client.command()
-@commands.has_permissions(manage_mesages = True)
+@commands.has_permissions(manage_messages = True)
 async def clear(ctx, amount: int):
     await ctx.channel.purge(limit = amount + 1)
 
