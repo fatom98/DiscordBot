@@ -1,14 +1,26 @@
 #To-do
 #TODO beyaz futbol recommendation
 
-import discord, random
-from discord.ext import commands
+import random, discord, os
+from discord.ext import commands, tasks
+from itertools import cycle
+
+
 
 client = commands.Bot(command_prefix = ".")
+status = cycle(["HOI4", "CS", "Valorant", "Baba Yorgun", "Berkin Hayalleri"])
+
+@client.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send("There is no such command")
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.send("You have no permission to execute this command")
 
 @client.event
 async def on_ready():
-    print("Bot is ready")
+    print("Bot is online")
+    changeStatus.start()
 
 @client.event
 async def on_member_join(member):
@@ -17,10 +29,6 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
     print(f"{member} has left our server")
-
-@client.command()
-async def ping(ctx):
-    await ctx.send(f"Your ping is {round(client.latency * 1000)}ms")
 
 @client.command(aliases = ["8ball", "test"])
 async def _8ball(ctx, *, question):
@@ -80,8 +88,58 @@ async def rps(ctx, shape):
             else:
                 await ctx.send(f"{ctx.message.author.mention}: scissors, computer: rock\nComputer wins")
 
+@client.command()
+@commands.has_permissions(manage_mesages = True)
+async def clear(ctx, amount: int):
+    await ctx.channel.purge(limit = amount + 1)
 
+@client.command()
+async def kick(ctx, member: discord.Member, *, reason = None):
+    await member.kick(reason = reason)
+    await ctx.send(f"{member.mention} is kicked from the server")
 
+@client.command()
+async def ban(ctx, member: discord.Member, *, reason = None):
+    await member.ban(reason = reason)
+    await ctx.send(f"{member.mention} is banned from the server")
 
+@client.command()
+async def unban(ctx, *, member):
+    bannedUsers = await ctx.guild.bans()
+    memberName, memberDisc = member.split("#")
 
-client.run("NzM4MTA5NDA1OTkxNzk2ODU4.XyHH8w.1MxzzgK-e2hCdcEtcOs4ksFe0q0")
+    for banEntry in bannedUsers:
+        user = banEntry.user
+        if (user.name, user.discriminator) == (memberName, memberDisc):
+            await ctx.guild.unban(user)
+            await ctx.send(f"Unbanned {user.mention}")
+            return
+
+@client.command()
+async def load(ctx, extension):
+    client.load_extension(f"cogs.{extension}")
+
+@client.command()
+async def unload(ctx, extension):
+    client.unload_extension(f"cogs.{extension}")
+
+@client.command()
+async def reload(ctx, extension):
+    client.unload_extension(f"cogs.{extension}")
+    client.load_extension(f"cogs.{extension}")
+
+@tasks.loop(hours = 5)
+async def changeStatus():
+    await client.change_presence(activity = discord.Game(next(status)))
+
+@clear.error
+async def clearError(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Please specify an amount of messages to delete")
+
+if __name__ == '__main__':
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            client.load_extension(f"cogs.{filename[:-3]}")
+
+    client.run("NzM4MTA5NDA1OTkxNzk2ODU4.XyHH8w.wqhSfJVgaofDnmnLKcglC5zt7OY")
