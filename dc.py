@@ -1,11 +1,6 @@
-#To-do
-#TODO beyaz futbol recommendation
-
 import random, discord, os
 from discord.ext import commands, tasks
 from itertools import cycle
-
-
 
 client = commands.Bot(command_prefix = ".")
 status = cycle(["HOI4", "CS", "Valorant", "Baba Yorgun", "Berkin Hayalleri"])
@@ -19,7 +14,7 @@ async def on_command_error(ctx, error):
 
 @client.event
 async def on_ready():
-    print("Bot is online")
+    print(f"{client.user.name} is online")
     changeStatus.start()
 
 @client.event
@@ -118,15 +113,19 @@ async def unban(ctx, *, member):
 @client.command()
 async def load(ctx, extension):
     client.load_extension(f"cogs.{extension}")
+    await ctx.send(f"{extension} is loaded")
 
 @client.command()
 async def unload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
+    await ctx.send(f"{extension} is unloaded")
 
 @client.command()
 async def reload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
     client.load_extension(f"cogs.{extension}")
+    await ctx.send(f"{extension} is reloaded")
+
 
 @tasks.loop(hours = 5)
 async def changeStatus():
@@ -142,4 +141,4 @@ if __name__ == '__main__':
         if filename.endswith(".py"):
             client.load_extension(f"cogs.{filename[:-3]}")
 
-    client.run("token")
+    client.run("NzQxNTg0MDE3MzM3MzUyMjc0.Xy5r7w.RGGaf8uGk9mO3XIwT1tVEVHDmyc")

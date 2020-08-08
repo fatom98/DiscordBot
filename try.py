@@ -1,5 +1,5 @@
-def hebel(x: int):
-    print(x)
+import time
 
-
-hebel(3)
+first = time.time()
+time.sleep(2)
+print(round(time.time() - first))
