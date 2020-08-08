@@ -3,9 +3,12 @@ from discord.ext import commands
 from discord.utils import get
 from youtubesearchpython import SearchVideos
 
+
 class Youtube(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.players = {}
+
 
     @commands.command(aliases = ["j"])
     async def join(self, ctx):
@@ -42,57 +45,22 @@ class Youtube(commands.Cog):
 
     @commands.command(alises = ["p"])
     async def play(self, ctx, *, search: str):
-        first = time.time()
-        global name
-        songThere = os.path.isfile("song.mp3")
-
-        try:
-            if songThere:
-                os.remove("song.mp3")
-                print("Removed old song.mp3")
-
-        except PermissionError:
-            print("You are currently listening that song")
-            await ctx.send(f"ERROR: Music is currently playing")
-            return
-
-        await ctx.send("Getting everything ready now")
-
-        voice = get(self.bot.voice_clients, guild = ctx.guild)
-
-        ydlOpts = {
-            "format": "bestaudio/best",
-            "postprocessors": [{
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-
-                }],
-        }
 
         query = SearchVideos(search, offset=1, mode="json", max_results=1)
         obj = json.loads(query.result())["search_result"][0]
         url = obj["link"]
 
-        with youtube_dl.YoutubeDL(ydlOpts) as ydl:
-            print(f"Downloading {search} now")
-            ydl.download([url])
+        guild = ctx.message.guild
+        voiceClient = guild.voice_client
 
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                name = file
-                print(f"Renamed File: {file}")
-                os.rename(file, "song.mp3")
+        player = await voiceClient.create_ytdl_player(url)
 
-        voice.play(discord.FFmpegPCMAudio("song.mp3"), after = lambda e: print(f"{name} has finished playing"))
-        voice.source = discord.PCMVolumeTransformer(voice.source)
-        voice.source.volume = 0.07
+        self.players[guild.id] = player
 
-        nName = name.rsplit("-", 2)
-        await ctx.send(f"Playing: {nName[0]}")
-        print("playing")
+        player.start()
 
-        print(time.time() - first)
+
+
 
 
 def setup(bot):
