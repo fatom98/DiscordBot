@@ -2,7 +2,7 @@ import random, discord, os
 from discord.ext import commands, tasks
 from itertools import cycle
 
-client = commands.Bot(command_prefix = ".")
+client = commands.Bot(command_prefix = "-")
 status = cycle(["HOI4", "CS", "Valorant", "Baba Yorgun", "Berkin Hayalleri"])
 
 @client.event
