@@ -141,4 +141,4 @@ if __name__ == '__main__':
         if filename.endswith(".py"):
             client.load_extension(f"cogs.{filename[:-3]}")
 
-    client.run("NzQxNTg0MDE3MzM3MzUyMjc0.Xy5r7w.RGGaf8uGk9mO3XIwT1tVEVHDmyc")
+    client.run("NzQxNTg0MDE3MzM3MzUyMjc0.Xy5r7w.cvYbSQBgulDU-WeWxTiSKaWl6Zc")
