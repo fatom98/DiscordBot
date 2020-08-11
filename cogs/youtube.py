@@ -1,4 +1,4 @@
-import discord, youtube_dl, os, json, time, asyncio
+import discord, youtube_dl, json, asyncio
 from discord.ext import commands
 from discord.utils import get
 from youtubesearchpython import SearchVideos
@@ -67,7 +67,7 @@ class Youtube(commands.Cog):
         if voice and voice.is_connected():
             await voice.move_to(channel)
         else:
-            voice = await channel.connect()
+            await channel.connect()
             print(f"The bot has connected to {channel}")
 
         await ctx.send(f"Joined {channel}")
