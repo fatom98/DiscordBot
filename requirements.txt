@@ -1,7 +1,8 @@
 git+https://github.com/Rapptz/discord.py
-discord.py[voice]>=1.4.0
+discord.py[voice]
 PyNaCl==1.4.0
 dnspython==2.0.0
 async-timeout==3.0.1
 youtube_dl
 youtube-search-python
+python-dotenv

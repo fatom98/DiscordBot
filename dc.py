@@ -1,9 +1,21 @@
-import random, discord, os
+import random, discord, os, json
 from discord.ext import commands, tasks
 from itertools import cycle
+from dotenv import find_dotenv, load_dotenv
 
-client = commands.Bot(command_prefix = "-")
+try:
+    ENV = find_dotenv()
+    load_dotenv(ENV)
+except:
+    pass
+
+client = commands.Bot(command_prefix = os.getenv("PREFIX"))
 status = cycle(["HOI4", "CS", "Valorant", "Baba Yorgun", "Berkin Hayalleri"])
+
+@client.event
+async def on_ready():
+    print(f"{client.user.name} is online")
+    changeStatus.start()
 
 @client.event
 async def on_command_error(ctx, error):
@@ -13,17 +25,21 @@ async def on_command_error(ctx, error):
         await ctx.send("You have no permission to execute this command")
 
 @client.event
-async def on_ready():
-    print(f"{client.user.name} is online")
-    changeStatus.start()
-
-@client.event
 async def on_member_join(member):
     print(f"Welcome {member} to our server")
 
 @client.event
 async def on_member_remove(member):
     print(f"{member} has left our server")
+
+@client.command()
+async def participants(ctx):
+    members = ctx.message.guild.members
+    members = {"Members": [f"{obj.name}#{obj.discriminator}" for obj in members]}
+
+    with open("docs/members.json", "w") as file:
+        json.dump(members, file, indent = 2)
+
 
 @client.command(aliases = ["8ball", "test"])
 async def _8ball(ctx, *, question):
@@ -141,4 +157,4 @@ if __name__ == '__main__':
         if filename.endswith(".py"):
             client.load_extension(f"cogs.{filename[:-3]}")
 
-    client.run("NzQxNTg0MDE3MzM3MzUyMjc0.Xy5r7w.cvYbSQBgulDU-WeWxTiSKaWl6Zc")
+    client.run(os.getenv("TOKEN"))

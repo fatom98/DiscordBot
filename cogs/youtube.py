@@ -91,10 +91,14 @@ class Youtube(commands.Cog):
         obj = json.loads(query.result())["search_result"][0]
         url = obj["link"]
 
-        async with ctx.typing():
+        print(f"The link is: {url}")
 
+        async with ctx.typing():
+            print("Initializing")
             player = await YTDLSource.from_url(url, loop = self.bot.loop)
+            print("Second Step")
             ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            print("Playing")
 
         await ctx.send(f'Now playing: {player.title}')
 

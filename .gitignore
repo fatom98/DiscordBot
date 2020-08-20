@@ -1,1 +1,4 @@
 try.py
+cogs/__pycache__/
+.env
+docs/members.json
