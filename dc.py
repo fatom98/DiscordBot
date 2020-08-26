@@ -3,11 +3,8 @@ from discord.ext import commands, tasks
 from itertools import cycle
 from dotenv import find_dotenv, load_dotenv
 
-try:
-    ENV = find_dotenv()
-    load_dotenv(ENV)
-except:
-    pass
+ENV = find_dotenv()
+load_dotenv(ENV)
 
 client = commands.Bot(command_prefix = os.getenv("PREFIX"))
 status = cycle(["HOI4", "CS", "Valorant", "Baba Yorgun", "Berkin Hayalleri"])
@@ -16,6 +13,14 @@ status = cycle(["HOI4", "CS", "Valorant", "Baba Yorgun", "Berkin Hayalleri"])
 async def on_ready():
     print(f"{client.user.name} is online")
     changeStatus.start()
+
+@client.event
+async def on_message(message):
+    if str(message.content).endswith("!"):
+        await message.channel.send(f"{message.content}")
+    else:
+        await client.process_commands(message)
+
 
 @client.event
 async def on_command_error(ctx, error):
